@@ -26,8 +26,12 @@ def wc(**kwargs):
     SYNOPSIS
         wc [OPTION]... [FILE]...
     DESCRIPTION
-        Count lines, words and characters of a file and pass value back.
+        wc count lines, words and characters, or specific sets of those as
+        specified by OPTIONS of FILE and passes a string back containing that
+        info.
+        If no FILE is given, it will return an error.
 
+    OPTIONS
         -l  count number of lines in file
         -w  count number of words in file
         -m  count number of characters in file
@@ -35,6 +39,8 @@ def wc(**kwargs):
     EXAMPLES
         wc file
             Output the number of lines, words, and characters back to function.
+        wc bacon.txt
+            81 680 4748 ../bacon.txt
     """
     if 'params' in kwargs:
         params = kwargs['params']
@@ -48,18 +54,17 @@ def wc(**kwargs):
         returnString = ''
         if not flags:
             return str(wcLines(iFile))+' '+str(wcWords(iFile))+' '+str(wcChars(iFile))+' '+params
-        elif 'l' in flags:
-            returnString = str(wcLines(iFile)) + ' '
-        elif 'w' in flags:
-            returnString = str(wcWords(iFile)) + ' '
-        elif 'm' in flags:
-            returnString = str(wcChars(iFile)) + ' '
+        if 'l' in flags:
+            returnString += str(wcLines(iFile)) + ' '
+        if 'w' in flags:
+            returnString += str(wcWords(iFile)) + ' '
+        if 'm' in flags:
+            returnString += str(wcChars(iFile)) + ' '
         return returnString + params
 
     except:
         return 'Invalid Input: No such file or directory'
 
 if __name__=='__main__':
-    testData = {"params":'../bacon.txt'}
-    print (wc(params='../bacon.txt'))
+    print (wc(params='../bacon.txt', flags='mw'))
     pass

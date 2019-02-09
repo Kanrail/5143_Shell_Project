@@ -20,13 +20,19 @@ def cd (**kwargs):
         path = kwargs['path']
 
     try:
-        '''if command ~ is given, it'll be subsituted by the shell with the user's
-        home directory'''
-        os.chdir(path[0])
-        #print (os.getcwd()) #here for debugging purposes
+        dirPath = path[0]
+        home = os.path.expanduser("~")
+        if "~" in dirPath:
+            dirPath = dirPath.replace("~", home)
+        elif dirPath == "":
+            dirPath = home
+
+        os.chdir(dirPath)
+        print ('Directory is now: '+os.getcwd()) #here for debugging purposes
+        return ''
     except:
         return 'Invalid Input: No such directory\n'
 
 if __name__=='__main__':
-    cd(path=['/'])
+    sys.stdout.write(cd(path=["~/Projects"]))
     pass

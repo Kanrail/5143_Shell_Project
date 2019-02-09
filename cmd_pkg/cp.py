@@ -26,7 +26,7 @@ def cp (**kwargs):
         copyfile(path[0]+params[0],path[1]+params[1])
         return ''
     except:
-        return 'Invalid Input: No such file or directory'
+        return 'Invalid Input: No such file or directory\n'
 
 if __name__=='__main__':
     sys.stdout.write(cp(params=['bacon.txt','bacon2.txt'], path=['./','./']))

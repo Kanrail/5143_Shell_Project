@@ -48,23 +48,25 @@ def wc(**kwargs):
         flags = kwargs['flags']
     else:
         flags = []
+    if 'path' in kwargs:
+        path = kwargs['path']
 
     try:
-        iFile = params
+        iFile = path[0]+params[0]
         returnString = ''
-        if not flags:
-            return str(wcLines(iFile))+' '+str(wcWords(iFile))+' '+str(wcChars(iFile))+' '+params
-        if 'l' in flags:
+        if not flags[0]:
+            return str(wcLines(iFile))+' '+str(wcWords(iFile))+' '+str(wcChars(iFile))+' '+params[0]
+        if 'l' in flags[0]:
             returnString += str(wcLines(iFile)) + ' '
-        if 'w' in flags:
+        if 'w' in flags[0]:
             returnString += str(wcWords(iFile)) + ' '
-        if 'm' in flags:
+        if 'm' in flags[0]:
             returnString += str(wcChars(iFile)) + ' '
-        return returnString + params
+        return returnString + params[0]
 
     except:
         return 'Invalid Input: No such file or directory'
 
 if __name__=='__main__':
-    print (wc(params='../bacon.txt', flags='mw'))
+    print (wc(params=['bacon.txt'], flags=[''], path=['./']))
     pass

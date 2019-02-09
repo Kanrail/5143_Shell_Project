@@ -19,12 +19,15 @@ def mv(**kwargs):
     """
     if 'params' in kwargs:
         params = kwargs['params']
+    if 'path' in kwargs:
+        path = kwargs['path']
+
     try:
-        move(params[0],params[1])
+        move(path[0]+params[0],path[1]+params[1])
         return ''
     except:
         return 'Invalid Input: No such file or directory\n'
 
 if __name__=='__main__':
-    sys.stdout.write(mv(params=['bacon.txt','bacon2.txt']))
+    sys.stdout.write(mv(params=['bacon.txt','bacon2.txt'], path=['./','./']))
     pass

@@ -1,7 +1,10 @@
+#!
+
 import sys
 import os
 
 def ls(**kwargs):
+
     """
     ls command is for listing all file's name in current location
     
@@ -10,10 +13,11 @@ def ls(**kwargs):
         params = kwargs['params']
     if 'path' in kwargs:
         path = kwargs['path']
-        
+
     output = os.listdir(path)
-    if output == Null:
-        print ("can't open direction")
-        
+    if output== Null:
+        print ("cant open direction")
+
     for params in output:
+        print params
         print params

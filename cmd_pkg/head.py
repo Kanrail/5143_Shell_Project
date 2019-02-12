@@ -26,7 +26,7 @@ def head (**kwargs):
     try:
         lineList = []
         try: #If the -n modifier is in use, tags[1] will be the number of lines
-            numLines = tags[1]
+            numLines = int(tags[1])
         except: #default with no modifier
             numLines = 10
         fileIn = open(path[0]+params[0], 'r')

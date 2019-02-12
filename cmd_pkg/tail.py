@@ -27,7 +27,7 @@ def tail (**kwargs):
         finalLineList = []
         tempLineList = []
         try: #If the -n modifier is in use, tags[1] will be the number of lines
-            numLines = tags[1]
+            numLines = int(tags[1])
         except: #default with no modifier
             numLines = 10
         fileIn = open(path[0]+params[0], 'r')
@@ -43,7 +43,7 @@ def tail (**kwargs):
         return 'Invalid Input: No such file or directory\n'
 
 if __name__=='__main__':
-    lineList = tail(path=['./'],params=['bacon.txt'],tags=['n',10])
+    lineList = tail(path=['./'],params=['bacon.txt'],tags=['n',4])
     for item in lineList:
         sys.stdout.write(item)
     pass

@@ -21,7 +21,6 @@ def cat (**kwargs):
         params = kwargs['params']
     if 'path' in kwargs:
         path = kwargs['path']
-
     try:
         pathCounter = 0
         stringList = []

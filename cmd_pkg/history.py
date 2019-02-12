@@ -33,11 +33,10 @@ class History(object):
 		
 	def getHistoryFromIndex (self, **kwargs):
 		if 'params' in kwargs:
-			index = kwargs['params]
+			index = kwargs['params']
 		else:
 			return 'No parameter given, please try command again with a number following.\n'
-		return 
-			self.fullHistory[index]
+		return self.fullHistory[index]
 
 	def getHistory (self, **kwargs):
 		"""

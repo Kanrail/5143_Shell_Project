@@ -1,13 +1,13 @@
 import os
-import glob
 
 def ls():
     try:
-        path = glob.glob(os.path.join('*'))
+        path = os.listdir(os.getcwd())
         print(path)
 
     except:
-        return 'Error\n'
+        return 'error\n'
+
 if __name__ == '__main__':
     a=ls()
     print(a)

@@ -74,3 +74,5 @@ class History(object):
 			self.rebuildHistory()
 		else:
 			return self.fullHistory
+if __name__=='__main__':
+    pass

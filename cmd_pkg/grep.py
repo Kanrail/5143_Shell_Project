@@ -19,23 +19,21 @@ def grep (**kwargs):
     """
         if 'params' in kwargs:
             params = kwargs['params']
-        if 'patterns' in kwargs:
-            patterns = kwargs['patterns']
         if 'path' in kwargs:
             path = kwargs['path']
 
         try:
-            inputFile = open(path[0]+params[0])
+            inputFile = open(path[1]+params[1])
             retStringList = []
             for line in inputFile:
-                if patterns in line:
+                if params[0] in line:
                     retStringList.append(line)
             return retStringList
         except:
             return 'Invalid Input: No such file or directory'
 
 if __name__=='__main__':
-    grepReturn = grep(params=['bacon.txt'],patterns=['bacon'], path=['../'])
+    grepReturn = grep(params=['bacon','bacon.txt'], path=['./','../'])
     for line in grepReturn:
         sys.stdout.write(line)
     pass

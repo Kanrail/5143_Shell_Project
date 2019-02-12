@@ -4,11 +4,12 @@ import glob
 def ls():
     try:
         path = glob.glob(os.path.join('*'))
+        path.sort(key=os.path.getmtime)
         print(path)
 
     except:
-        return 'Error\n'
+        return 'error\n'
+
 if __name__ == '__main__':
     a=ls()
     print(a)
-

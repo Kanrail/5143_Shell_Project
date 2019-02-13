@@ -36,52 +36,54 @@ def rm(**kwargs):
         path = kwargs['path']
     if 'tags' in kwargs:
         tags = kwargs['tags']
+    else:
+        tags = []
 
-    try:
-        paramPieces = []
+    #try:
+    paramPieces = []
 
-        paramCharacters = list(str(params[0]))
-        tagsCharacters = list(str(tags[0]))
-        currentDirectory = os.listdir(path[0])
-        tagFlag = ''
+    paramCharacters = list(str(params[0]))
+    currentDirectory = os.listdir(path[0])
+    tagFlag = ''
 
-        if 'r' in tagsCharacters:
-            tagFlag = 'r'
-        if '*' in paramCharacters: #checks for wildcard
-            paramPieces = params[0].split('*') #breaks the string in half around wildcard
-            if params[0]=='*':
-                #rmtree(path[0])
-                for root,dirs,files in os.walk(path[0]): #steps through filestructure of path
-                    for file in files:
-                            os.remove(os.path.join(root,file))
-                    for dir in dirs:
-                        if tagFlag == 'r':
-                            rmtree(os.path.relpath(os.path.join(root,dir), "."))
-                        else:
-                            rmdir(os.path.relpath(os.path.join(root,dir), "."))
-                return ''
-            elif '' not in paramPieces: #if the wildcard was in the middle of string somewhere
-                for target in currentDirectory:
-                    if target.startswith(paramPieces[0]) and target.endswith(paramPieces[1]):
-                        deleteItem(path[0], target, tagFlag)
-                return '' #end middle wildcard if statement
+    if 'r' in tags:
+        tagFlag = 'r'
+    if '*' in paramCharacters: #checks for wildcard
+        paramPieces = params[0].split('*') #breaks the string in half around wildcard
+        if params[0]=='*':
+            #rmtree(path[0])
+            for root,dirs,files in os.walk(path[0]): #steps through filestructure of path
+                for file in files:
+                        os.remove(os.path.join(root,file))
+                for dir in dirs:
+                    if tagFlag == 'r':
+                        rmtree(os.path.relpath(os.path.join(root,dir), "."))
+                    else:
+                        rmdir(os.path.relpath(os.path.join(root,dir), "."))
+            return ''
+        elif '' not in paramPieces: #if the wildcard was in the middle of string somewhere
+            for target in currentDirectory:
+                if target.startswith(paramPieces[0]) and target.endswith(paramPieces[1]):
+                    deleteItem(path[0], target, tagFlag)
+            return '' #end middle wildcard if statement
 
-            elif paramPieces[0] is '': #if the first character in params is wildcard
-                for target in currentDirectory:
-                    if target.endswith(paramPieces[1]):
-                        deleteItem(path[0], target, tagFlag)
-                return '' #end first wildcard character statement
+        elif paramPieces[0] is '': #if the first character in params is wildcard
+            for target in currentDirectory:
+                if target.endswith(paramPieces[1]):
+                    deleteItem(path[0], target, tagFlag)
+            return '' #end first wildcard character statement
 
-            else: #if last character in params is wildcard
-                for target in currentDirectory:
-                    if target.startswith(paramPieces[0]):
-                        deleteItem(path[0], target, tagFlag)
-                return ''#end last wildcard character statement
-        deleteItem(path[0], params[0], tagFlag)#fires if no wildcard present, just deletes file
-        return ''
+        else: #if last character in params is wildcard
+            for target in currentDirectory:
+                if target.startswith(paramPieces[0]):
+                    deleteItem(path[0], target, tagFlag)
+            return ''#end last wildcard character statement
+    deleteItem(path[0], params[0], tagFlag)#fires if no wildcard present, just deletes file
+    print ('FIRING')
+    return ''
 
-    except:
-        return 'Invalid Input: No such file or directory\n'
+    #except:
+        #return 'Invalid Input: No such file or directory\n'
 
 if __name__=='__main__':
     sys.stdout.write(rm(params=['test*'],path=['./testdir/testdir2/'],tags=['r']))

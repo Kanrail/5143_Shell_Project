@@ -1,6 +1,13 @@
 import os
 import glob
 
+
+"""
+
+iner function
+bean value
+
+"""
 def ls-n(path):
     try:
         path = glob.glob(os.path.join('*'))

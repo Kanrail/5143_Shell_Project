@@ -1,42 +1,45 @@
 import sys
+import os
+from touch import touch
 
 class History(object):
 	def __init__(self):
 		self.currentIndex = -1
 		self.fullHistory = []
+		self.shellStorePath = os.path.expanduser("~")+'.shellhistory.txt'
 		try:
-			historyFile = open('~/.shellhistory.txt')
+			historyFile = open(self.shellStorePath)
 			for line in historyFile:
 				self.currentIndex+=1
 				self.fullHistory.append(line)
 		except:
-			historyFile = open('~/.shellhistory.txt')
+			touch(path=[os.path.expanduser("~")],params=['.shellhistory.txt'])
 
 	def historyIncIndex(self):
 		self.currentIndex+=1
-		
+
 	def historyDecIndex(self):
 		self.currentIndex-1
-		
+
 	def getHistoryIndex(self):
 		return self.currentIndex
-		
+
 	def clearHistory(self):
-		historyFile = open('~/.shellhistory.txt','w+')
-		
+		historyFile = open(self.shellStorePath,'w').close()
+
 	def rebuildHistory(self):
 		self.fullHistory = []
-		historyFile = open('~/.shellhistory.txt')
+		historyFile = open(self.shellStorePath)
 		for line in historyFile:
 			self.currentIndex+=1
 			self.fullHistory.append(line)
-		
+
 	def getHistoryFromIndex (self, **kwargs):
 		if 'params' in kwargs:
 			index = kwargs['params']
 		else:
 			return 'No parameter given, please try command again with a number following.\n'
-		return self.fullHistory[index]
+		return self.fullHistory[int(index)]
 
 	def getHistory (self, **kwargs):
 		"""
@@ -45,10 +48,10 @@ class History(object):
 			history - shows all previously entered commands
 		SYNOPSIS
 			history
-		
+
 		OPTIONS
 			-c 		clears the command history
-		
+
 		DESCRIPTION
 			history shows all previously entered commands in a sequential list with
 			its index+1 to the left and the command to the right, 1 per line vertically.
@@ -57,21 +60,34 @@ class History(object):
 		"""
 		if 'tags' in kwargs:
 			tags = kwargs['tags']
-		if 'params' in params:
+		else:
+			tags = []
+		if 'params' in kwargs:
 			command = kwargs['params']
 		else:
 			command = []
-		
-		historyFile = open('.shellhistory.txt','a')
-		
+
 		if 'c' in tags:
 			self.clearHistory()
 			return
 		elif command != []:
-			historyFile.write(command[0], 'a')
-			self.historyIncIndex()
+			with open(self.shellStorePath,'a') as historyFile:
+				historyFile.write(command[0])
 			self.rebuildHistory()
+			self.currentIndex=len(self.fullHistory)-1
 		else:
-			return self.fullHistory
+			returnStrList = []
+			index = 0
+			for item in self.fullHistory:
+				returnStrList.append(str(index)+'  '+item)
+				index+=1
+			return returnStrList
+
+
+
 if __name__=='__main__':
-    pass
+	HR = History()
+	commandOutput = HR.getHistory()
+	for line in commandOutput:
+		sys.stdout.write(line)
+	pass

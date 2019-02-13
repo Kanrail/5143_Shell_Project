@@ -27,7 +27,6 @@ def cd (**kwargs):
 
     try:
         home = os.path.expanduser("~")
-        print (path[0])
         if path ==[] and params ==[]:
             dirPath = home
         elif params != []:

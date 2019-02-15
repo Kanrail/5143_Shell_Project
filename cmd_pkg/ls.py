@@ -56,6 +56,8 @@ def lsl():
             #inf=str(stat.filemode(os.stat(files).st_mode)
 
             gid=str(getgrgid(inode.st_gid).gr_name)
+            #gid=str(inode.st_gid)
+            #uid=str(inode.st_uid)
             uid=str(getpwuid(inode.st_uid).pw_name)
             siz=str(inode.st_size)
 
@@ -72,25 +74,38 @@ def lsl():
         return 'error\n'
 
 
-def ls():
+def ls(**kwargs):
+    
+    #if 'params' in kwargs:
+     #   params=kwargs['params']
+        
+    if 'tags' in kwargs:
+        tags=kwargs['tags']
+        
+    else:
+        tags=[]
+        
+    #if 'path' in kwargs:
+     #   path=kwargs['tags']
+        
     try:
+        returnString=''
         if not tags[0]:
-            return str(lsn(p))
+            returnString = str(lsn())
         if 'a' in tags[0]:
-            return str(lsa(p))
+            returnString = str(lsa())
         if 't' in tags[0]:
-            return str(lst(p))
+            returnString = str(lst())
         if 'h' in tags[0]:
-            return str(lsh(p))
+            returnString = str(lsh())
         if 'l' in tags[0]:
-            return str(lsl(p))
+            returnString = str(lsl())
+            
+        return returnString
 
     except:
         return 'error\n'
 
 if __name__ == '__main__':
-    a=ls()
-    print(a)
-
-
+    print(ls(params=[''],tags=[''],path=['./']))
 

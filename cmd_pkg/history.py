@@ -17,9 +17,13 @@ class History(object):
 
 	def historyIncIndex(self):
 		self.currentIndex+=1
+		if self.currentIndex > len(self.fullHistory-1):
+			self.currentIndex = len(self.fullHistory-1)
 
 	def historyDecIndex(self):
 		self.currentIndex-1
+		if self.currentIndex < -1:
+			self.currentIndex = -1
 
 	def getHistoryIndex(self):
 		return self.currentIndex

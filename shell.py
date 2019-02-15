@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 import threading
-import sys
+import sys, tty, termios
 import os
 from cmd_pkg import commands
 import getpass
 from cmd_pkg import history
 import readline
+import getch2
 
 
 def exit(**kwargs):
@@ -31,6 +32,7 @@ class CommandHelper(object):
         self.commands['who'] = commands.who
         self.commands['sort'] = commands.sort
         self.commands['touch'] = commands.touch
+        self.commands['chmod'] = commands.chmod
         self.commands['exit'] = exit
 
     def invoke(self, **kwargs):
@@ -88,17 +90,54 @@ class CommandHelper(object):
             pass
 
     def readInput(self,**kwargs):
-        if 'prompt' in kwargs:
-            prompt = kwargs['prompt']
-        if 'prefill' in kwargs:
-            prefill = kwargs['prefill']
-        else:
-            prefill = ''
-        readline.set_startup_hook(lambda: readline.insert_text(prefill))
-        try:
-            return raw_input(prompt)
-        finally:
-            readline.set_startup_hook()
+        hist = history.History()
+        currentIndex = hist.getHistoryIndex()
+        cursorIndex = 0
+        ch = getch2.Getch()
+
+        if 'params' in kwargs:
+            params = kwargs['params']
+
+        prompt = params[0]+' '+params[1]+'% '
+
+        input = ''
+        while (True):
+            sys.stdout.write('\r'+'                                                     ')
+            sys.stdout.write('\r'+prompt+input)
+            char = list(ch.impl())
+            #print (char)
+            if char[0]=='\x1b':
+                char.append(ch.impl())
+                char.append(ch.impl())
+                if char[2] == 'A':#Output
+                    #input = 'UP ARROW'
+                    hist.historyDecIndex()
+                    input = hist.getHistoryFromIndex(currentIndex)
+                elif char[2] == 'B':
+                    #input = 'DOWN ARROW'
+                    hist.historyIncIndex()
+                    if currentIndex == -1:
+                        input = ''
+                    else:
+                        input = hist.getHistoryFromIndex(currentIndex)
+            elif char[0]=='\x7f':
+                try:
+                    input = input[:-1]
+                    sys.stdout.write('\b ')
+                    sys.stdout.flush()
+                except:
+                    input = ''
+            elif char[0]=='\r':
+                sys.stdout.write('\n')
+                break
+
+            else:
+                input= input+char[0]
+                pass
+            sys.stdout.write('\r'+'                                                     ')
+            sys.stdout.write('\r'+prompt+input)
+            sys.stdout.flush()
+        return input
 
 
 
@@ -116,11 +155,13 @@ if __name__ == '__main__':
         # get input from terminal (use input if raw_input doesn't work)
         currentDirectory = os.path.basename(os.getcwd())
         currentUser = getpass.getuser()
-        if normalCommand == True:
-            command_input = ch.readInput(prompt=currentDirectory+' '+currentUser+'% ')
-        else:#currently broken
-            command_input = ch.readInput(prompt=currentDirectory+' '+currentUser+'% ',prefill=prevCommand)
-        #Add the command to the history file
+        command_input = ch.readInput(params=[currentDirectory, currentUser])
+        '''
+                if normalCommand == True:
+                    command_input = ch.readInput(prompt=currentDirectory+' '+currentUser+'% ')
+                else:#currently broken
+                    command_input = ch.readInput(prompt=currentDirectory+' '+currentUser+'% ',prefill=prevCommand)
+        '''     #Add the command to the history file
         hist.getHistory(params=[command_input+'\n'])
 
         # remove command from params (very over simplified)

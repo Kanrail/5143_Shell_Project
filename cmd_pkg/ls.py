@@ -9,7 +9,7 @@ from grp import getgrgid
 from pwd import getpwuid
 
 
-def ls-n():
+def lsn():
     try:
         path = glob.glob(os.path.join('*'))
         print(path)
@@ -17,7 +17,7 @@ def ls-n():
     except:
         return 'Error\n'
 
-def ls-a():
+def lsa():
     try:
         path = os.listdir(os.getcwd())
         print(path)
@@ -26,7 +26,7 @@ def ls-a():
         return 'error\n'
 
 
-def ls-h():
+def lsh():
     try:
         path = glob.glob(os.path.join('*'))
         path.sort(key=os.path.getsize)
@@ -36,7 +36,7 @@ def ls-h():
         return 'error\n'
 
 
-def ls-t():
+def lst():
     try:
         path = glob.glob(os.path.join('*'))
         path.sort(key=os.path.getmtime)
@@ -46,7 +46,7 @@ def ls-t():
         return 'error\n'
 
 
-def ls-l():
+def lsl():
     try:
         path  = os.listdir(os.getcwd())
         for name in path:
@@ -75,15 +75,15 @@ def ls-l():
 def ls():
     try:
         if not tags[0]:
-            return str(ls-n(p))
+            return str(lsn(p))
         if 'a' in tags[0]:
-            return str(ls-a(p))
+            return str(lsa(p))
         if 't' in tags[0]:
-            return str(ls-t(p))
+            return str(lst(p))
         if 'h' in tags[0]:
-            return str(ls-h(p))
+            return str(lsh(p))
         if 'l' in tags[0]:
-            return str(ls-l(p))
+            return str(lsl(p))
 
     except:
         return 'error\n'

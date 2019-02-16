@@ -11,17 +11,17 @@ class History(object):
 			historyFile = open(self.shellStorePath)
 			for line in historyFile:
 				self.currentIndex+=1
-				self.fullHistory.append(line)
+				self.fullHistory.append(line.strip('\n'))
 		except:
 			touch(path=[os.path.expanduser("~")],params=['.shellhistory.txt'])
 
 	def historyIncIndex(self):
 		self.currentIndex+=1
-		if self.currentIndex > len(self.fullHistory-1):
-			self.currentIndex = len(self.fullHistory-1)
+		if self.currentIndex > len(self.fullHistory)-1:
+			self.currentIndex = len(self.fullHistory)-1
 
 	def historyDecIndex(self):
-		self.currentIndex-1
+		self.currentIndex-=1
 		if self.currentIndex < -1:
 			self.currentIndex = -1
 
@@ -36,13 +36,13 @@ class History(object):
 		historyFile = open(self.shellStorePath)
 		for line in historyFile:
 			self.currentIndex+=1
-			self.fullHistory.append(line)
+			self.fullHistory.append(line.strip('\n'))
 
-	def getHistoryFromIndex (self, **kwargs):
-		if 'params' in kwargs:
-			index = kwargs['params']
-		else:
-			return 'No parameter given, please try command again with a number following.\n'
+	def getHistoryFromIndex (self, index):
+		#if 'params' in kwargs:
+		#	index = kwargs['params']
+		#else:
+			#return 'No parameter given, please try command again with a number following.\n'
 		return self.fullHistory[int(index)]
 
 	def getHistory (self, **kwargs):

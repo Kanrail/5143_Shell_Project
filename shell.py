@@ -91,7 +91,6 @@ class CommandHelper(object):
 
     def readInput(self,**kwargs):
         hist = history.History()
-        currentIndex = hist.getHistoryIndex()
         cursorIndex = 0
         ch = getch2.Getch()
 
@@ -105,6 +104,7 @@ class CommandHelper(object):
             sys.stdout.write('\r'+'                                                     ')
             sys.stdout.write('\r'+prompt+input)
             char = list(ch.impl())
+            currentIndex = hist.getHistoryIndex()
             #print (char)
             if char[0]=='\x1b':
                 char.append(ch.impl())
@@ -113,6 +113,8 @@ class CommandHelper(object):
                     #input = 'UP ARROW'
                     hist.historyDecIndex()
                     input = hist.getHistoryFromIndex(currentIndex)
+                    #print (input)
+                    #print (hist.currentIndex)
                 elif char[2] == 'B':
                     #input = 'DOWN ARROW'
                     hist.historyIncIndex()

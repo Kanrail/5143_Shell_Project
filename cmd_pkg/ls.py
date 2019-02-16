@@ -1,111 +1,152 @@
 import os
 import glob
-
-
 import stat
 from datetime import datetime
 import time
 from grp import getgrgid
 from pwd import getpwuid
+import itertools
+
+def sliceReturn(n, iterable):
+    return list(itertools.islice(iterable, n))
+
+def lsn(**kwargs):
+    #try:
+        if 'params' in kwargs:
+            params = kwargs['params']
+        else:
+            params = [False,False]
+        aFlag = params[0]
+        hFlag = params[1]
+
+        if aFlag == True:
+            path = os.listdir(os.getcwd())
+            path.insert(0, '..')
+            path.insert(0, '.')
+        elif hFlag == True: #actual -h tag doesn't do anything after testing if not also -l
+            path = glob.glob(os.path.join('*'))
+        else:
+            path = glob.glob(os.path.join('*'))
+
+        returnStr = []
+
+        cCount = 5 #number of columns
+
+        columns, dangling = divmod(len(path), cCount)
+        iterator = iter(path)
+        columns = [sliceReturn(columns + (dangling > i), iterator) for i in range(cCount)]
+        paddings = [max(map(len, column)) for column in columns]
+        for row in itertools.izip_longest(*columns, fillvalue=''):
+            returnStr.append('  '.join(file.ljust(pad) for file, pad in zip(row, paddings)))
+        return returnStr
+
+def humanReadNum(num):
+    for unit in ['B','K','M','G','T']:
+        if num < 1024.0:
+            if unit == 'B':
+                numR = int(num)
+            else:
+                numR = '{:.{prec}f}'.format(num, prec=1)
+            return "{}{}".format(numR,unit)
+        num = num / 1024.0
+
+def lsl(**kwargs):
+    if 'params' in kwargs:
+        params = kwargs['params']
+    else:
+        params = [False,False]
+    aFlag = params[0]
+    hFlag = params[1]
+
+    returnStrList = []
+
+    path  = os.listdir(os.getcwd())
+    for name in path:
+        nameCheck = list(name)
+        if nameCheck[0]=='.' and aFlag == False:#Will skip hidden files if a tag not present
+            continue
+
+        info = os.lstat(name)
+
+        files  = os.path.join(os.getcwd(), name)
+        inode = os.stat(files)
+
+        isLink = os.path.islink(name)
+        isDir = os.path.isdir(name)
+        perms = ''
+
+        if isLink:
+            perms = 'l'
+        if isDir:
+            perms = 'd'
+        else:
+            perms = '-'
+
+        permission ={
+            '8':'---',
+            '1':'--x',
+            '2':'-w-',
+            '3':'-wx',
+            '4':'r--',
+            '5':'rw-',
+            '6':'rw-',
+            '7':'rwx'
+        }
+        octalPerms = list(oct(info.st_mode)[-3:])
+
+        for item in octalPerms:
+            perms=perms+permission[item]
+
+        nlink = info.st_nlink
+        gid=str(getgrgid(inode.st_gid).gr_name)
+
+        uid=str(getpwuid(inode.st_uid).pw_name)
+
+        siz=info.st_size
+        if hFlag == True:#Converts byte size to human readable if h tag present
+            siz = humanReadNum(siz)
+
+        date=datetime.utcfromtimestamp(info.st_mtime).strftime('%b %d %H:%M')
 
 
-def lsn():
-    try:
-        path = glob.glob(os.path.join('*'))
-        print(path)
-
-    except:
-        return 'Error\n'
-
-def lsa():
-    try:
-        path = os.listdir(os.getcwd())
-        print(path)
-
-    except:
-        return 'error\n'
-
-
-def lsh():
-    try:
-        path = glob.glob(os.path.join('*'))
-        path.sort(key=os.path.getsize)
-        print(path)
-
-    except:
-        return 'error\n'
-
-
-def lst():
-    try:
-        path = glob.glob(os.path.join('*'))
-        path.sort(key=os.path.getmtime)
-        print(path)
-
-    except:
-        return 'error\n'
-
-
-def lsl():
-    try:
-        path  = os.listdir(os.getcwd())
-        for name in path:
-            files  = os.path.join(os.getcwd(), name)
-            inode = os.stat(files)
-            #inf=str(inode.st_mode)
-            #inf=str(stat.filemode(os.stat(files).st_mode)
-
-            gid=str(getgrgid(inode.st_gid).gr_name)
-            #gid=str(inode.st_gid)
-            #uid=str(inode.st_uid)
-            uid=str(getpwuid(inode.st_uid).pw_name)
-            siz=str(inode.st_size)
-
-            b=''
-            date=datetime.utcfromtimestamp(inode.st_atime).strftime('%Y-%m-%d %H:%M:%S')
-            permission ={'8':'---','1':'--x','2':'-w-','3':'-wx','4':'r--','5':'rw-','6':'rw-','7':'rwx'}
-            inf=str(inode.st_mode)
-            for i in inf:
-                b=b+permission[i]
-
-            print(b + ' ' + gid + ' ' + uid + ' '  + date +' '+ siz  + ' ' + name)
-
-    except:
-        return 'error\n'
-
+        returnStrList.append('{:10}'.format(perms)
+                            +'{:4d}'.format(nlink)+' '
+                            +'{:11}'.format(uid)
+                            +'{:6}'.format(gid)
+                            +'{:>6}'.format(siz)
+                            +' '  + date
+                            +' ' + name + '\n')
+    return returnStrList
 
 def ls(**kwargs):
-    
-    #if 'params' in kwargs:
-     #   params=kwargs['params']
-        
+
     if 'tags' in kwargs:
-        tags=kwargs['tags']
-        
+        tags = kwargs['tags']
     else:
         tags=[]
-        
-    #if 'path' in kwargs:
-     #   path=kwargs['tags']
-        
-    try:
-        returnString=''
-        if not tags[0]:
-            returnString = str(lsn())
-        if 'a' in tags[0]:
-            returnString = str(lsa())
-        if 't' in tags[0]:
-            returnString = str(lst())
-        if 'h' in tags[0]:
-            returnString = str(lsh())
-        if 'l' in tags[0]:
-            returnString = str(lsl())
-            
-        return returnString
 
-    except:
-        return 'error\n'
+    aFlag = False
+    hFlag = False
+    lFlag = False
+
+    returnString=''
+    if not tags:
+        returnString = lsn()
+    else:
+        if 'a' in tags:
+            aFlag = True
+        if 'h' in tags:
+            hFlag = True
+        if 'l' in tags:
+            lFlag = True
+            returnString = lsl(params=[aFlag, hFlag])
+        else:
+            returnString = lsn(params=[aFlag, hFlag])
+
+    return returnString
 
 if __name__ == '__main__':
-    print(ls(params=[''],tags=[''],path=['./']))
-
+    lsReturn = ls(params=[''],tags=['a'],path=['./'])
+    if type(lsReturn)==list :
+        for line in lsReturn:
+            print (line)

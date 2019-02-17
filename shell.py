@@ -34,6 +34,19 @@ class CommandHelper(object):
         self.commands['touch'] = commands.touch
         self.commands['chmod'] = commands.chmod
         self.commands['exit'] = exit
+        self.tCounter = -1
+        self.tPool = []
+
+    def getThread(self,dFlag):
+        tType = ''
+        tName = ''
+        self.tCounter+=1
+        if dFlag==True:
+            tType = 'daemon'
+        else:
+            tType = 'non-daemon'
+        tName = 'thread'+str(self.tCounter)
+        return [tType,tName,' ']
 
     def invoke(self, **kwargs):
         if 'cmd' in kwargs:
@@ -49,7 +62,7 @@ class CommandHelper(object):
         if 'thread' in kwargs:
             thread = kwargs['thread']
         else:
-            thread = False
+            thread = (False,False)
 
         if 'tags' in kwargs:
             tags = kwargs['tags']
@@ -63,18 +76,27 @@ class CommandHelper(object):
         return self.commands[cmd](params=params,path=path,tags=tags)
         '''
         # One way to invoke using dictionary
-        if not thread:
-            self.commands[cmd](params=params)
+        if thread[1]==False:
+            print('NOT FIRING AS THREAD')
+            return self.commands[cmd](params=params, path=path, tags=tags)
         else:
+            print('STARTING THREAD')
+            self.tPool.append(self.getThread(thread[0]))
             # Using a thread ****** broken right now *********
-            if len(params) > 0:
-                c = threading.Thread(target=self.commands[cmd], args=tuple(kwargs))
+            if len(params)+len(tags)+len(path) > 0:
+                self.tPool[self.tCounter][2] = threading.Thread(name=str(self.tPool[self.tCounter][1]),
+                                                            target=self.commands[cmd],
+                                                            args=**kwargs)
             else:
-                c = threading.Thread(target=self.commands[cmd])
+                self.tPool[self.tCounter][2] = threading.Thread(name=str(self.tPool[self.tCounter][1]),
+                                                            target=self.commands[cmd])
+            if self.tPool[self.tCounter][0] =='daemon':
+                self.tPool[self.tCounter][2].setDaemon(True)
 
-            c.start()
-            c.join()
-        '''
+            self.tPool[self.tCounter][2].start()
+            print('FIRING')
+            return self.tPool[self.tCounter][2].join()
+            '''
 
     def exists(self, cmd):
         return cmd in self.commands
@@ -309,7 +331,7 @@ if __name__ == '__main__':
 
         # if command exists in our shell
         if ch.exists(cmd):
-            ch.printCmdOutput(ch.invoke(cmd=cmd,tags=tags,path=path,params=params,thread=True)
+            ch.printCmdOutput(ch.invoke(cmd=cmd,tags=tags,path=path,params=params,thread=(False,True))
                                         ,printParams=printParams)
 
         elif cmd == 'history':

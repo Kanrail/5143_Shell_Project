@@ -1,4 +1,26 @@
 import sys
+import glob
+import os
+
+def grepL(**kwargs):
+    if 'params' in kwargs:
+        params = kwargs['params']
+    path = glob.glob(os.path.join('*'))
+    fileList = []
+
+    for file in path:
+        try:
+            paramFound = False
+            inputFile = open(file)
+            for line in inputFile:
+                if params[0] in line:
+                    paramFound = True
+                    break
+            if paramFound == True:
+                fileList.append(file)
+        except:
+            fileList.append(file+' is a directory')
+    return fileList
 
 def grep (**kwargs):
         """
@@ -21,14 +43,22 @@ def grep (**kwargs):
             params = kwargs['params']
         if 'path' in kwargs:
             path = kwargs['path']
+        if 'tags' in kwargs:
+            tags = kwargs['tags']
+        else:
+            tags = []
 
         try:
-            inputFile = open(path[1]+params[1])
-            retStringList = []
-            for line in inputFile:
-                if params[0] in line:
-                    retStringList.append(line)
-            return retStringList
+            if not tags:
+                inputFile = open(path[1]+params[1])
+                retStringList = []
+                for line in inputFile:
+                    if params[0] in line:
+                        retStringList.append(line)
+                return retStringList
+            elif tags[0]=='l':
+                return grepL(params=params)
+
         except:
             return 'Invalid Input: No such file or directory'
 

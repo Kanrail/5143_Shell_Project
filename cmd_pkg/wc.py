@@ -42,6 +42,7 @@ def wc(**kwargs):
         wc bacon.txt
             81 680 4748 ../bacon.txt
     """
+    iFile = ''
     if 'params' in kwargs:
         params = kwargs['params']
     if 'tags' in kwargs:
@@ -50,11 +51,13 @@ def wc(**kwargs):
         tags = []
     if 'path' in kwargs:
         path = kwargs['path']
-
-    try:
         iFile = path[0]+params[0]
+    else:
+        iFile = params[0]
+    try:
+        print(iFile)
         returnString = ''
-        if not tags[0]:
+        if not tags:
             return str(wcLines(iFile))+' '+str(wcWords(iFile))+' '+str(wcChars(iFile))+' '+params[0]
         if 'l' in tags[0]:
             returnString += str(wcLines(iFile)) + ' '
@@ -68,5 +71,5 @@ def wc(**kwargs):
         return 'Invalid Input: No such file or directory'
 
 if __name__=='__main__':
-    print (wc(params=['bacon.txt'], tags=[''], path=['./']))
+    print (wc(params=['/Users/hellspawn/Projects/5143_Shell_Project/bacon.txt'], tags=[''], path=['']))
     pass

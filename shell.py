@@ -79,13 +79,32 @@ class CommandHelper(object):
     def exists(self, cmd):
         return cmd in self.commands
 
-    def printCmdOutput(self, output):
+    def printCmdOutput(self, output, **kwargs):
+        printFile = ''
+        if 'printParams' in kwargs:
+            printParams = kwargs['printParams']
+            try:
+                if printParams[1]==True:
+                    printFile = open(printParams[3],'w')
+            except:
+                sys.stdout.write('Error: Invalid file or path given.\n')
+        else:
+            printParams = [True,False,False,''] #print to CMD,print to file,append to file,printing file
+
         if type(output) is list:
             for line in output:
-                sys.stdout.write(line)
-            sys.stdout.write('\n')
+                if printParams[0]==True:
+                    sys.stdout.write(line.strip('\n') + '\n')
+                elif printParams[1]==True:
+                    printFile.write(line.strip('\n')  + '\n')
+                else:
+                    with open(printParams[3],'a') as pFile:
+                        pFile.write(line.strip('\n')  + '\n')
         elif type(output) is str:
-            sys.stdout.write(output+'\n')
+            if printParams[0]==True:
+                sys.stdout.write(line.strip('\n')  + '\n')
+            else:
+                printFile.write(line.strip('\n')  + '\n')
         else:
             pass
 
@@ -101,7 +120,8 @@ class CommandHelper(object):
 
         input = ''
         while (True):
-            sys.stdout.write('\r'+'                                                     ')
+            sys.stdout.write('\r'+'                                            '
+                                 +'     ')
             sys.stdout.write('\r'+prompt+input)
             char = list(ch.impl())
             currentIndex = hist.getHistoryIndex()
@@ -109,16 +129,20 @@ class CommandHelper(object):
             if char[0]=='\x1b':
                 char.append(ch.impl())
                 char.append(ch.impl())
-                if char[2] == 'A':#Output
+                if char[2] == 'A':
                     #input = 'UP ARROW'
                     hist.historyDecIndex()
-                    input = hist.getHistoryFromIndex(currentIndex)
-                    #print (input)
-                    #print (hist.currentIndex)
+                    currentIndex = hist.getHistoryIndex()
+                    if currentIndex == -1:
+                        input = hist.getHistoryFromIndex(0)
+                    else:
+                        input = hist.getHistoryFromIndex(currentIndex)
+
                 elif char[2] == 'B':
                     #input = 'DOWN ARROW'
                     hist.historyIncIndex()
-                    if currentIndex == -1:
+                    currentIndex = hist.getHistoryIndex()
+                    if currentIndex==999999999:
                         input = ''
                     else:
                         input = hist.getHistoryFromIndex(currentIndex)
@@ -136,7 +160,8 @@ class CommandHelper(object):
             else:
                 input= input+char[0]
                 pass
-            sys.stdout.write('\r'+'                                                     ')
+            sys.stdout.write('\r'+'                                            '
+                                 +'    ')
             sys.stdout.write('\r'+prompt+input)
             sys.stdout.flush()
         return input
@@ -148,9 +173,11 @@ if __name__ == '__main__':
 
     ch = CommandHelper()
     hist = history.History()
-    prevCommand = ''
-    normalCommand = True
-    prevCommandIndex = 0
+
+    outputToCmd = True
+    outputToFile = False
+    appendToFile = False
+    printFile = ''
 
     while True:
 
@@ -158,12 +185,7 @@ if __name__ == '__main__':
         currentDirectory = os.path.basename(os.getcwd())
         currentUser = getpass.getuser()
         command_input = ch.readInput(params=[currentDirectory, currentUser])
-        '''
-                if normalCommand == True:
-                    command_input = ch.readInput(prompt=currentDirectory+' '+currentUser+'% ')
-                else:#currently broken
-                    command_input = ch.readInput(prompt=currentDirectory+' '+currentUser+'% ',prefill=prevCommand)
-        '''     #Add the command to the history file
+        #Add the command to the history file
         hist.getHistory(params=[command_input+'\n'])
 
         # remove command from params (very over simplified)
@@ -176,85 +198,93 @@ if __name__ == '__main__':
         #if user is pulling a command back
         tempCmdList = list(command_input[0])
         if tempCmdList[0] == '!':#currently broken
-            try:
-                normalCommand = False
+            #try:
                 prevCommandIndex = int(''.join(tempCmdList[1:]))
-                if prevCommandIndex > 0:
-                    pass
+                command_input = hist.getHistoryFromIndex(prevCommandIndex)
+                sys.stdout.write(command_input+'\n')
+                command_input = command_input.split()
+                tempCmdList = list(command_input[0])
+            #except:
+                #sys.stdout.write('Invalid parameter.\n')
+                #continue
+
+        for item in command_input[1:]:
+            commandPiece = list(item)
+            if commandPiece[0]=='-':
+                commandPiece.remove('-')
+                if 'n' in commandPiece:
+                    tags.append('n')
+                    hasNumber = False
+                    wholeTagLine = ''.join(commandPiece)
+                    nextCommand = command_input[command_input.index(item)+1]
+                    for char in wholeTagLine:
+                        if char.isdigit(): #if the value for -n is attached without a space
+                            tags.append(''.join(num for num in wholeTagLine if num.isdigit()))
+                            break
                 else:
-                    prevCommandIndex = 0
-                prevCommand = hist.getHistoryFromIndex(params=prevCommandIndex)
-            except:
-                sys.stdout.write('Invalid parameter.\n')
+                    for tag in commandPiece:
+                        tags.append(tag)
+                command_input.remove(item)
+            elif command_input[command_input.index(item)]=='>':
+                outputToCmd = False
+                outputToFile = True
+                command_input.pop(command_input.index(item))
+                printFile = command_input.pop()
+                break
+            elif command_input[command_input.index(item)]=='>>':
+                outputToCmd = False
+                appendToFile = True
+                print ('Attempting file append')
+                command_input.pop(command_input.index(item))
+                printFile = command_input.pop()
+                break
+            elif '/' in commandPiece:
+                paramPath = []
+                pathEnd = 0
+                charCounter = 0
+                for char in commandPiece:
+                    if char == '/':
+                        pathEnd = charCounter
+                    charCounter+=1
+
+                path.append(''.join(commandPiece[0:pathEnd+1]))
+                #removes the path from the parameter
+                command_input[command_input.index(item)]=''.join(commandPiece[pathEnd+1:])
+            elif item== '..':
+                path.append(item)
+                command_input.pop(command_input.index(item))
+            elif item== '~':
+                path.append(item)
+                command_input.pop(command_input.index(item))
+            elif command_input.index(item)=='|':
+                #Do nothing for now, will get this working later. Ignoring further commands for now
+                command_input = command_input[0:command_input.index(item)]
+            else: # path for every parameter, if none given will insert just a ./
+                path.append('./')
+
+        #printing paramaters
+        printParams = [outputToCmd,outputToFile,appendToFile,printFile]
+        # params are all but first position in list
+        params = command_input[1:]
+
+        # pull actual command from list
+        cmd = command_input[0]
+
+        #if command is history
+
+        # if command exists in our shell
+        if ch.exists(cmd):
+            #print ('Command is '+str(cmd))
+            #print ('Tags are '+str(tags))
+            #print ('Paths are '+str(path))
+            #print ('Params are '+str(params))
+            ch.printCmdOutput(ch.invoke(cmd=cmd,tags=tags,path=path,params=params,thread=True)
+                                        ,printParams=printParams)
+            #if cmd == 'cd':
+                #print ('Directory is now: '+os.getcwd())
+
+        elif cmd == 'history':
+            ch.printCmdOutput(hist.getHistory(tags=tags), printParams=printParams)
+
         else:
-            normalCommand = True
-            for item in command_input[1:]:
-                commandPiece = list(item)
-                if commandPiece[0]=='-':
-                    commandPiece.remove('-')
-                    if 'n' in commandPiece:
-                        tags.append('n')
-                        hasNumber = False
-                        wholeTagLine = ''.join(commandPiece)
-                        nextCommand = command_input[command_input.index(item)+1]
-                        for char in wholeTagLine:
-                            if char.isdigit(): #if the value for -n is attached without a space
-                                tags.append(''.join(num for num in wholeTagLine if num.isdigit()))
-                                break
-                            '''elif nextCommand.isdigit(): #if there is a space between -n and its value
-                                tags.append(nextCommand)
-                                command_input.remove(nextCommand)
-                                break'''
-                    else:
-                        for tag in commandPiece:
-                            tags.append(tag)
-                    command_input.remove(item)
-                elif '/' in commandPiece:
-                    paramPath = []
-                    pathEnd = 0
-                    charCounter = 0
-                    for char in commandPiece:
-                        if char == '/':
-                            pathEnd = charCounter
-                        charCounter+=1
-
-                    path.append(''.join(commandPiece[0:pathEnd+1]))
-                    #removes the path from the parameter
-                    command_input[command_input.index(item)]=''.join(commandPiece[pathEnd+1:])
-                elif item== '..':
-                    path.append(item)
-                    command_input.pop(command_input.index(item))
-                elif item== '~':
-                    path.append(item)
-                    command_input.pop(command_input.index(item))
-                elif command_input.index(item)=='|':
-                    #Do nothing for now, will get this working later. Ignoring further commands for now
-                    command_input = command_input[0:command_input.index(item)]
-                else: #if a paremeter has no path given, default a paremeter of local
-                    path.append('./')
-
-            # path for every parameter, if none given will insert just a ./
-
-            # params are all but first position in list
-            params = command_input[1:]
-
-            # pull actual command from list
-            cmd = command_input[0]
-
-            #if command is history
-
-            # if command exists in our shell
-            if ch.exists(cmd):
-                #print ('Command is '+str(cmd))
-                #print ('Tags are '+str(tags))
-                #print ('Paths are '+str(path))
-                #print ('Params are '+str(params))
-                ch.printCmdOutput(ch.invoke(cmd=cmd,tags=tags,path=path,params=params,thread=True))
-                #if cmd == 'cd':
-                    #print ('Directory is now: '+os.getcwd())
-
-            elif cmd == 'history':
-                ch.printCmdOutput(hist.getHistory(tags=tags))
-
-            else:
-                print("Error: command %s doesn't exist." % (cmd))
+            print("Error: command %s doesn't exist." % (cmd))

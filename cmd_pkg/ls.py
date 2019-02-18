@@ -45,13 +45,17 @@ def lsn(**kwargs):
     returnStr = []
 
     cCount = 5 #number of columns
-
-    columns, dangling = divmod(len(path), cCount)
-    iterator = iter(path)
-    columns = [sliceReturn(columns + (dangling > i), iterator) for i in range(cCount)]
-    paddings = [max(map(len, column)) for column in columns]
-    for row in itertools.izip_longest(*columns, fillvalue=''):
-        returnStr.append('  '.join(file.ljust(pad) for file, pad in zip(row, paddings)))
+    
+    try: #handling edge case of not enough files
+        columns, dangling = divmod(len(path), cCount)
+        iterator = iter(path)
+        columns = [sliceReturn(columns + (dangling > i), iterator) for i in range(cCount)]
+        paddings = [max(map(len, column)) for column in columns]
+        for row in itertools.izip_longest(*columns, fillvalue=''):
+            returnStr.append('  '.join(file.ljust(pad) for file, pad in zip(row, paddings)))
+    except:
+        for item in path:
+            returnStr.append(item)
     return returnStr
 
 def humanReadNum(num):

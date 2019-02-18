@@ -14,7 +14,19 @@ def exit(**kwargs):
 
 
 class CommandHelper(object):
+    """
+    Class Name: CommandHelper 
+    Functions: __init__, getThread, invoke, exists,printCmdOutput, readInput
+    Description: Contains all functions to reading in, printing, and utilizing the commands
+    """
     def __init__(self):
+        """
+        Method Name: __init__
+        Input: None
+        Output: None
+        Description: Construsts the initial commands dictionary as well as setting up the threads pool
+            variables
+        """
         self.commands = {}
         self.commands['ls'] = commands.ls
         self.commands['cat'] = commands.cat
@@ -39,6 +51,13 @@ class CommandHelper(object):
         self.tPool = []
 
     def getThread(self,dFlag):
+        """
+        Method Name: getThread
+        Input: dFlag (bool)
+        Output: a list with tType(string), tName(string), and empty string
+        Description: Increments tCounter for a new unique thread to be in tPool (thread pool)
+        and marks whether that thread is a daemon or nondaemon.
+        """
         tType = ''
         tName = ''
         self.tCounter+=1
@@ -50,6 +69,12 @@ class CommandHelper(object):
         return [tType,tName,' ']
 
     def invoke(self, **kwargs):
+        """
+        Method Name: invoke
+        Input: cmd (string), params(list of strings), thread (bool), tags (list of chars), path (list of strings)
+        Output: Returns whatever data comes back from the command being called (string or list of strings)
+        Description: Sets up the commands call
+        """
         if 'cmd' in kwargs:
             cmd = kwargs['cmd']
         else:
@@ -97,12 +122,24 @@ class CommandHelper(object):
             self.tPool[self.tCounter][2].start()
             print('FIRING')
             return self.tPool[self.tCounter][2].join()
-            '''
+       '''
 
     def exists(self, cmd):
+        """
+        Method Name: exists
+        Input: cmd (string)
+        Output: bool
+        Description: Returns True if command is in commands, else returns false
+        """
         return cmd in self.commands
 
     def printCmdOutput(self, output, **kwargs):
+        """
+        Method Name: printFile
+        Input: output(list of str or str), printParams(outputToCmd(bool),outputToFile(bool),appendToFile(bool))
+        Output: Prints to screen or file depending on printParams passed in
+        Description: Prints to screen or file depending on printParams passed in.
+        """
         printFile = ''
         if 'printParams' in kwargs:
             printParams = kwargs['printParams']
@@ -133,6 +170,14 @@ class CommandHelper(object):
             pass
 
     def readInput(self,**kwargs):
+        """
+        Method Name: readInput
+        Input: params (2 strings)
+        Output: input (string)
+        Description: Using Getch will handle character input to either parse through history for a
+            command using up and down arrow keys, or user can input their own command. Upon pressing
+            enter the command will be returned as a completed string.
+        """
         hist = history.History()
         cursorIndex = 0
         ch = getch2.Getch()
@@ -191,6 +236,13 @@ class CommandHelper(object):
         return input
 
 def pathParse(paramList):
+    """
+    Function Name: pathParse
+    Input: paramList (contains strings)
+    Output: string(joined path list), pathEnd (int)
+    Description: Parses a path given counting the slashes and returns the path
+        minus the filename with a char index(pathEnd) denoting the end of the path
+    """
     paramPath = []
     pathEnd = 0
     charCounter = 0
@@ -245,16 +297,16 @@ if __name__ == '__main__':
                 sys.stdout.write('Invalid parameter.\n')
                 continue
 
-        for item in command_input[1:]:
+        for item in command_input[1:]:#Parses the command parameters and tags
             commandPiece = list(item)
-            if commandPiece[0]=='-':
-                commandPiece.remove('-')
-                if 'n' in commandPiece:
+            if commandPiece[0]=='-':#If the parameter is a tag
+                commandPiece.remove('-') 
+                if 'n' in commandPiece: #special case n to ensure integer follows the n tag
                     tags.append('n')
                     hasNumber = False
                     wholeTagLine = ''.join(commandPiece)
                     nextCommand = command_input[command_input.index(item)+1]
-                    for char in wholeTagLine:
+                    for char in wholeTagLine: #reads in that value if its a number, then stops processing that param
                         if char.isdigit(): #if the value for -n is attached without a space
                             tags.append(''.join(num for num in wholeTagLine if num.isdigit()))
                             break
@@ -303,15 +355,15 @@ if __name__ == '__main__':
                 path.append(pathP[0])
                 #removes the path from the parameter
                 command_input[1]=''.join(pipePiece[pathP[1]+1:])
-            elif '/' in commandPiece:
+            elif '/' in commandPiece: #indicating that there may be a lengthy path
                 pathP = pathParse(commandPiece)
                 path.append(pathP[0])
                 #removes the path from the parameter
                 command_input[command_input.index(item)]=''.join(commandPiece[pathP[1]+1:])
-            elif item== '..':
+            elif item== '..':#backup one directory
                 path.append(item)
                 command_input.pop(command_input.index(item))
-            elif item== '~':
+            elif item== '~':#home path
                 path.append(item)
                 command_input.pop(command_input.index(item))
             else: # path for every parameter, if none given will insert just a ./

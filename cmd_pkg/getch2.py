@@ -12,6 +12,7 @@ screen."""
 
 
 class _GetchUnix:
+    """Gets the character from standard input in Unix based systems."""
     def __init__(self):
         import tty, sys
 
@@ -28,6 +29,7 @@ class _GetchUnix:
 
 
 class _GetchWindows:
+    """Gets the character from standard input in Windows based systems."""
     def __init__(self):
         import msvcrt
 

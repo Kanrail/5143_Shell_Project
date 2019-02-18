@@ -24,8 +24,8 @@ def sort (**kwargs):
 
     try:
         fileOpen = open(path[0]+params[0])
-        preCapSortList = []
-        preLowSortList = []
+        preCapSortList = [] #Capital letter sublist to sort
+        preLowSortList = [] #Lower case sublist to sort
         finalSort = []
         for line in fileOpen:
             tempCharList = list(line)
@@ -37,11 +37,11 @@ def sort (**kwargs):
             else:
                 preLowSortList.append(line)
 
-        preCapSortList.sort()
-        preLowSortList.sort()
-        for item in preCapSortList:
+        preCapSortList.sort() #Sort capital sublist
+        preLowSortList.sort() #Sort lowercase sublist
+        for item in preCapSortList: #Append the capital sublist to the return sublist
             finalSort.append(item)
-        for item in preLowSortList:
+        for item in preLowSortList: #Append the lowercase sublist to the return sublist
             finalSort.append(item)
         return finalSort
     except:

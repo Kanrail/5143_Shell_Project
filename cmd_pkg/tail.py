@@ -33,8 +33,8 @@ def tail (**kwargs):
         fileIn = open(path[0]+params[0], 'r')
         for line in fileIn:
             tempLineList.append(line)
-        endOfListPointer = len(tempLineList)-1
-        while numLines > 0:
+        endOfListPointer = len(tempLineList)-1 #Starts at end of list
+        while numLines > 0: #Starts printing from the end up using the pointer to n given
             finalLineList.insert(0,tempLineList[endOfListPointer])
             endOfListPointer-=1
             numLines-=1

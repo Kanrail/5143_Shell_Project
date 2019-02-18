@@ -8,39 +8,61 @@ from pwd import getpwuid
 import itertools
 
 def sliceReturn(n, iterable):
+    """
+    Name: sliceReturn
+    Input: iterable
+    Output: list of the iterable slice
+    Description: Needed function for lsn for parsing columns.
+    """
     return list(itertools.islice(iterable, n))
 
 def lsn(**kwargs):
-    #try:
-        if 'params' in kwargs:
-            params = kwargs['params']
-        else:
-            params = [False,False]
-        aFlag = params[0]
-        hFlag = params[1]
+    """
+    Name: lsn (ls normal)
+    Input: params[aFlag (bool), hFlag (bool)]
+    Output: returnStr (list of strings)
+    Description: Is the ls command with no -l flag. Will output all files based upon whether
+        the aFlag is True or not. aFlag will show all files including hidden, will only show
+        non-hidden files if aFlag is False. Provides the data back in 5 columns alphabetically
+        descending starting in column 1 through column 5.
+    """
+    if 'params' in kwargs:
+        params = kwargs['params']
+    else:
+        params = [False,False]
+    aFlag = params[0]
+    hFlag = params[1]
 
-        if aFlag == True:
-            path = os.listdir(os.getcwd())
-            path.insert(0, '..')
-            path.insert(0, '.')
-        elif hFlag == True: #actual -h tag doesn't do anything after testing if not also -l
-            path = glob.glob(os.path.join('*'))
-        else:
-            path = glob.glob(os.path.join('*'))
+    if aFlag == True:
+        path = os.listdir(os.getcwd())
+        path.insert(0, '..')
+        path.insert(0, '.')
+    elif hFlag == True: #actual -h tag doesn't do anything after testing if not also -l
+        path = glob.glob(os.path.join('*'))
+    else:
+        path = glob.glob(os.path.join('*'))
 
-        returnStr = []
+    returnStr = []
 
-        cCount = 5 #number of columns
+    cCount = 5 #number of columns
 
-        columns, dangling = divmod(len(path), cCount)
-        iterator = iter(path)
-        columns = [sliceReturn(columns + (dangling > i), iterator) for i in range(cCount)]
-        paddings = [max(map(len, column)) for column in columns]
-        for row in itertools.izip_longest(*columns, fillvalue=''):
-            returnStr.append('  '.join(file.ljust(pad) for file, pad in zip(row, paddings)))
-        return returnStr
+    columns, dangling = divmod(len(path), cCount)
+    iterator = iter(path)
+    columns = [sliceReturn(columns + (dangling > i), iterator) for i in range(cCount)]
+    paddings = [max(map(len, column)) for column in columns]
+    for row in itertools.izip_longest(*columns, fillvalue=''):
+        returnStr.append('  '.join(file.ljust(pad) for file, pad in zip(row, paddings)))
+    return returnStr
 
 def humanReadNum(num):
+    """
+    Name: humanReadNum
+    Input: num (int)
+    Output: string 
+    Description: Reads in a number in bytes, continues dividing it by 1024 until it can't without
+        becoming fractional, and returns that value with associated letter to represent the category
+        of datasize with it as a string.
+    """
     for unit in ['B','K','M','G','T']:
         if num < 1024.0:
             if unit == 'B':
@@ -51,6 +73,16 @@ def humanReadNum(num):
         num = num / 1024.0
 
 def lsl(**kwargs):
+    """
+    Name: lsl
+    Input: params[aFlag (bool), hFlag (bool)]
+    Output: returnStr (list of strings)
+    Description: Returns a list of strings with data in the following format. Also, the aFlag being True
+        will list all files and directories, hidden and otherwise. The hFlag being True will change the bytes
+        of the data to human readable with size suffixes.
+        
+        [permissions] [num of links to file] [user] [group] [size] [time of last modification]
+    """
     if 'params' in kwargs:
         params = kwargs['params']
     else:

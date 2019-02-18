@@ -337,6 +337,8 @@ if __name__ == '__main__':
                                                 params=command_input[1:command_input.index(item)],
                                                 thread=True)
                                                 ,printParams=printParams)
+                elif cmd == 'history':
+                    ch.printCmdOutput(hist.getHistory(tags=tags), printParams=printParams)
                 else:
                     print("Error: command %s doesn't exist." % (command_input[0]))
                     brokenCommand = True

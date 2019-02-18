@@ -30,11 +30,11 @@ def head (**kwargs):
         except: #default with no modifier
             numLines = 10
         fileIn = open(path[0]+params[0], 'r')
-        while numLines > 0:
+        while numLines > 0: #appends to a list the number of lines in variable n
             lineList.append(fileIn.readline())
             numLines-=1
         return lineList
-    except:
+    except: #General error handling
         return 'Invalid Input: No such file or directory\n'
 
 if __name__=='__main__':

@@ -151,6 +151,21 @@ def lsl(**kwargs):
     return returnStrList
 
 def ls(**kwargs):
+    """
+    LS                         User Commands                        LS
+    NAME
+        ls - lists files in current directory
+    SYNOPSIS
+        ls
+    DESCRIPTION
+        ls lists all non-hidden files in current directory
+    OPTIONS
+        -l long listing that details a number of attributes about the files
+        -a lists all hidden files and directories in the current working directory
+        -h changes the numerical byte output to human readable
+    EXAMPLE
+        ls
+    """
 
     if 'tags' in kwargs:
         tags = kwargs['tags']

@@ -3,6 +3,14 @@ import glob
 import os
 
 def grepL(**kwargs):
+    """
+    Function Name: grepL
+    Input: params (keyword to match to)
+    Output: fileList (list of matching filenames)
+    Description: params contains a keyword to search the filenames that are in path and returns
+    a list of those that contain the keyword. Also returns any directories with the tag that it is
+    a directory and thus won't search it.
+    """
     if 'params' in kwargs:
         params = kwargs['params']
     path = glob.glob(os.path.join('*'))

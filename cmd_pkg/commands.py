@@ -16,6 +16,7 @@ from wc import wc
 from who import who
 from touch import touch
 from chmod import chmod
+from less import less
 
 """
 This function iterates over globals.items() and if one of the values is "callable"

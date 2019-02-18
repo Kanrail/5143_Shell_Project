@@ -33,6 +33,7 @@ class CommandHelper(object):
         self.commands['sort'] = commands.sort
         self.commands['touch'] = commands.touch
         self.commands['chmod'] = commands.chmod
+        self.commands['less'] = commands.less
         self.commands['exit'] = exit
         self.tCounter = -1
         self.tPool = []

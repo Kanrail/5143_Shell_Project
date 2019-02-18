@@ -3,6 +3,13 @@ import os
 from shutil import rmtree
 
 def deleteItem(relPath, item, flag):
+    """
+    Function Name: deleteItem
+    Input: relPath(string), item (string), flag(string)
+    Output: None
+    Description: Will attempt to first delete the directory, recursively if r flag given, otherwise
+        will attempt to delete a file of the same name.
+    """
     try:
         if flag=='r': #r modifier for recursive destruction
             rmtree(relPath+item)
@@ -46,7 +53,7 @@ def rm(**kwargs):
     currentDirectory = os.listdir(path[0])
     tagFlag = ''
 
-    if 'r' in tags:
+    if 'r' in tags: #recursive delete flag
         tagFlag = 'r'
     if '*' in paramCharacters: #checks for wildcard
         paramPieces = params[0].split('*') #breaks the string in half around wildcard
@@ -79,7 +86,6 @@ def rm(**kwargs):
                     deleteItem(path[0], target, tagFlag)
             return ''#end last wildcard character statement
     deleteItem(path[0], params[0], tagFlag)#fires if no wildcard present, just deletes file
-    print ('FIRING')
     return ''
 
     #except:

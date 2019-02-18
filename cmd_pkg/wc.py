@@ -1,4 +1,14 @@
+"""
+This file contains the wc shell command.
+"""
+
 def wcLines (inputFile):
+    """
+    Function Name: wcLines
+    Input: inputFile (string)
+    Output: lineCount (int)
+    Description: Reads in a file and counts the number of lines and returns that number.
+    """
     iFile = open(inputFile)
     lineCount = 0
     for line in iFile:
@@ -6,6 +16,12 @@ def wcLines (inputFile):
     return lineCount
 
 def wcWords (inputFile):
+    """
+    Function Name: wcWords
+    Input: inputFile (string)
+    Output: wordCount (int)
+    Description: Reads in a file and counts the number of words and returns that number.
+    """
     iFile = open(inputFile)
     wordCount = 0
     for line in iFile:
@@ -14,6 +30,12 @@ def wcWords (inputFile):
     return wordCount
 
 def wcChars (inputFile):
+    """
+    Function Name: wcChars
+    Input: inputFile (string)
+    Output: len(iFile.read()) (int)
+    Description: Reads in a file and counts the number of characters and returns that number.
+    """
     iFile = open(inputFile)
     return len(iFile.read())
 

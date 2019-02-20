@@ -7,6 +7,7 @@ cat <br />
 cd <br />
 chmod <br />
 cp <br />
+exit <br />
 grep <br />
 head <br />
 history <br />

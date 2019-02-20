@@ -1,8 +1,9 @@
-Daniel Bowen
-2/20/2019
-5143_Shell_Project
-
-Implementation of basic shell with the following list of commands. All commands work. All flags are to be passed to the calling command in the following format: (command) (flags) (parameters). Flags can be passed altogether or as several separate dashes, but must be before the parameters. All -n flags are to be immediately followed by a number contatenated like "-n10".
+Daniel Bowen <br />
+2/20/2019 <br />
+5143_Shell_Project <br />
+ <br />
+Implementation of basic shell with the following list of commands. All commands work. All flags are to be passed to the calling command in the following format: (command) (flags) (parameters). Flags can be passed altogether or as several separate dashes, but must be before the parameters. All -n flags are to be immediately followed by a number contatenated like "-n10".<br />
+<br />
 cat <br />
 cd <br />
 chmod <br />

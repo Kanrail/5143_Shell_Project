@@ -10,6 +10,12 @@ import getch2
 
 
 def exit(**kwargs):
+    """
+    Function Name: exit
+    Input: None
+    Output: None
+    Description: Exits the shell program.
+    """
     sys.exit()
 
 

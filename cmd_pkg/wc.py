@@ -77,7 +77,6 @@ def wc(**kwargs):
     else:
         iFile = params[0]
     try:
-        print(iFile)
         returnString = ''
         if not tags:
             return str(wcLines(iFile))+' '+str(wcWords(iFile))+' '+str(wcChars(iFile))+' '+params[0]

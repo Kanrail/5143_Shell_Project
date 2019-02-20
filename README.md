@@ -1,4 +1,28 @@
-# 5143_Shell_Project
-Provides basic functionality of a shell with no threading.
+Daniel Bowen
+2/20/2019
+5143_Shell_Project
 
-Will try to get threading and color working in the future.
+Implementation of basic shell with the following list of commands. All commands work. All flags are to be passed to the calling command in the following format: (command) (flags) (parameters). Flags can be passed altogether or as several separate dashes, but must be before the parameters. All -n flags are to be immediately followed by a number contatenated like "-n10".
+-cat
+-cd
+-chmod
+-cp
+-grep
+-head
+-history
+-less
+-ls (only runs on current working directory, but all flags(lah) work)
+-mkdir
+-mv
+-rm
+-rmdir
+-sort
+-tail
+-touch
+-wc
+-who
+- |
+- >
+- >>
+
+References: Printing of tabular format for ls heavily influenced by https://codereview.stackexchange.com/questions/188353/vertically-print-a-list-of-strings-to-stdout-into-3-columns-with-column-lengths

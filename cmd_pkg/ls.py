@@ -45,7 +45,7 @@ def lsn(**kwargs):
     returnStr = []
 
     cCount = 5 #number of columns
-    
+
     try: #handling edge case of not enough files
         columns, dangling = divmod(len(path), cCount)
         iterator = iter(path)
@@ -62,7 +62,7 @@ def humanReadNum(num):
     """
     Name: humanReadNum
     Input: num (int)
-    Output: string 
+    Output: string
     Description: Reads in a number in bytes, continues dividing it by 1024 until it can't without
         becoming fractional, and returns that value with associated letter to represent the category
         of datasize with it as a string.
@@ -84,7 +84,7 @@ def lsl(**kwargs):
     Description: Returns a list of strings with data in the following format. Also, the aFlag being True
         will list all files and directories, hidden and otherwise. The hFlag being True will change the bytes
         of the data to human readable with size suffixes.
-        
+
         [permissions] [num of links to file] [user] [group] [size] [time of last modification]
     """
     if 'params' in kwargs:
@@ -96,63 +96,66 @@ def lsl(**kwargs):
 
     returnStrList = []
 
-    path  = os.listdir(os.getcwd())
-    for name in path:
-        nameCheck = list(name)
-        if nameCheck[0]=='.' and aFlag == False:#Will skip hidden files if a tag not present
-            continue
+    try:
+        path  = os.listdir(os.getcwd())
+        for name in path:
+            nameCheck = list(name)
+            if nameCheck[0]=='.' and aFlag == False:#Will skip hidden files if a tag not present
+                continue
 
-        info = os.lstat(name)
+            info = os.lstat(name)
 
-        files  = os.path.join(os.getcwd(), name)
-        inode = os.stat(files)
+            files  = os.path.join(os.getcwd(), name)
+            inode = os.stat(files)
 
-        isLink = os.path.islink(name)
-        isDir = os.path.isdir(name)
-        perms = ''
+            isLink = os.path.islink(name)
+            isDir = os.path.isdir(name)
+            perms = ''
 
-        if isLink:
-            perms = 'l'
-        if isDir:
-            perms = 'd'
-        else:
-            perms = '-'
+            if isLink:
+                perms = 'l'
+            if isDir:
+                perms = 'd'
+            else:
+                perms = '-'
 
-        permission ={
-            '8':'---',
-            '1':'--x',
-            '2':'-w-',
-            '3':'-wx',
-            '4':'r--',
-            '5':'rw-',
-            '6':'rw-',
-            '7':'rwx'
-        }
-        octalPerms = list(oct(info.st_mode)[-3:])
+            permission ={
+                '8':'---',
+                '1':'--x',
+                '2':'-w-',
+                '3':'-wx',
+                '4':'r--',
+                '5':'rw-',
+                '6':'rw-',
+                '7':'rwx'
+            }
+            octalPerms = list(oct(info.st_mode)[-3:])
 
-        for item in octalPerms:
-            perms=perms+permission[item]
+            for item in octalPerms:
+                perms=perms+permission[item]
 
-        nlink = info.st_nlink
-        gid=str(getgrgid(inode.st_gid).gr_name)
+            nlink = info.st_nlink
+            gid=str(getgrgid(inode.st_gid).gr_name)
 
-        uid=str(getpwuid(inode.st_uid).pw_name)
+            uid=str(getpwuid(inode.st_uid).pw_name)
 
-        siz=info.st_size
-        if hFlag == True:#Converts byte size to human readable if h tag present
-            siz = humanReadNum(siz)
+            siz=info.st_size
+            if hFlag == True:#Converts byte size to human readable if h tag present
+                siz = humanReadNum(siz)
 
-        date=datetime.utcfromtimestamp(info.st_mtime).strftime('%b %d %H:%M')
+            date=datetime.utcfromtimestamp(info.st_mtime).strftime('%b %d %H:%M')
 
 
-        returnStrList.append('{:10}'.format(perms)
-                            +'{:4d}'.format(nlink)+' '
-                            +'{:11}'.format(uid)
-                            +'{:6}'.format(gid)
-                            +'{:>6}'.format(siz)
-                            +' '  + date
-                            +' ' + name + '\n')
-    return returnStrList
+            returnStrList.append('{:10}'.format(perms)
+                                +'{:4d}'.format(nlink)+' '
+                                +'{:11}'.format(uid)
+                                +'{:6}'.format(gid)
+                                +'{:>6}'.format(siz)
+                                +' '  + date
+                                +' ' + name + '\n')
+        return returnStrList
+    except:
+        return 'Error: Something went wrong.\n'
 
 def ls(**kwargs):
     """

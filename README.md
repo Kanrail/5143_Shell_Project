@@ -14,7 +14,7 @@ Implementation of basic shell with the following list of commands. All commands 
  #### Instructions
 
 - All flags are to be passed to the calling command in the following format: (command) (flags) (parameters).
-     -When piping, assume that the output will be in the (parameters) location.
+-- When piping, assume that the output will be in the (parameters) location.
 - Flags can be passed altogether or as several separate dashes, but must be before the parameters.
 - All -n flags are to be immediately followed by a number contatenated like "-n10".
 <br />

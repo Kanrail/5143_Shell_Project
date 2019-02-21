@@ -42,7 +42,7 @@ Implementation of basic shell with the following list of commands. All commands 
 | wc              | prnts words,lines,chars  | Daniel      |                                      |
 | who             | displays users logged in | Daniel      |                                      |
 | pwd             | prints current work dir  | Daniel      |                                      |
-|  "|"            |output from cmd to another| Daniel      |                                      |
+| pipe            |output from cmd to another| Daniel      |                                      |
 |  >              | output cmd to file       | Daniel      |                                      |
 |  >>             | append cmd output to file| Daniel      |                                      |
 

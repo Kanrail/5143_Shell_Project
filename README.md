@@ -7,7 +7,7 @@
 - Sun Shenglin
 
  <br />
- #### Overview:
+ #### Overview
  
 Implementation of basic shell with the following list of commands. All commands work.   <br />
 <br />
